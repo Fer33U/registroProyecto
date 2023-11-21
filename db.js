@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const url = 'mongodb://localhost/db_alumnos'
+const url = 'mongodb://localhost/db_registroProyecto'
 mongoose.connect(url, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
