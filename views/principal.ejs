@@ -28,7 +28,7 @@
                 <th>Descripcion</th>
                 <th>Fecha Inicio</th>
                 <th>Fecha Fin</th>
-                <th>Stakeholder</th>
+                <th>Estatus</th>
                 <th>Acciones</th>
             </tr>
             </thead>
@@ -41,9 +41,11 @@
                     <td><%= proyecto.descripcion %></td>
                     <td><%= proyecto.fechaInicio %></td>
                     <td><%= proyecto.fechaFin %></td>
-                    <td><%= proyecto.stakeholder %></td>
+                    <td><%= proyecto.estatus %></td>
                     <td>
-                        <a type="button" class="btnInfo btn btn-outline-primary bi bi-info-circle"></a>
+                        <a href="/consultaproyectos/<%= proyecto._id %>" class="btn btn-outline-primary bi bi-info-circle"></a>
+
+
                         <a href="/borrar/<%= proyecto._id %>" class="btn btn-outline-danger bi bi-trash"></a>
                     </td>
                 </tr>
