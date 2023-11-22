@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-
 const registroProyectoController = require('../controllers/registroProyectoController');
 
 // Mostrar todos los Proyectos (GET)
@@ -16,5 +15,7 @@ router.get('/borrar/:id', registroProyectoController.borrar);
 router.get('/registroProyecto', (req, res) => {
     res.render('registroProyecto');
 });
+// Ruta para contar proyectos (GET)
+router.get('/api/proyectos/count', registroProyectoController.contarProyectos);
 
 module.exports = router;

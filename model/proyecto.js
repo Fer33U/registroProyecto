@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const proyectoSchema = new Schema({
+    folio: String, // Agregar el campo de folio al modelo
     nombrePry: String,
     nombreCrt: String,
     descripcion: String,
@@ -11,7 +12,7 @@ const proyectoSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Stakeholder'
     }],
-    stakeholdersInfo: [{  // Agregar un nuevo campo para guardar la información del Stakeholder
+    stakeholdersInfo: [{
         nombre: String,
         correoElectronico: String,
         telefono: String

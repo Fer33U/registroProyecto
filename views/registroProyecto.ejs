@@ -21,11 +21,12 @@
         <h4>Registro Proyecto</h4>
         <form action="/crear" method="POST" id="proyectoForm">
 <!-- Campos existentes del formulario -->
+<!-- Campo de folio deshabilitado -->
 <div class="col-md-6">
     <label for="folio" class="form-label">Folio</label>
     <input id="folio" name="folio" type="text" class="form-control" disabled>
-  </div>
-  
+</div>
+ 
 <div class="col-md-6">
     <label for="nombrePry" class="form-label">Nombre del Proyecto</label>
     <input id="nombrePry" name="nombrePry" type="text" class="form-control" required>
@@ -138,3 +139,31 @@
 </div>
 </body>
 </html>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#nombreCrt').on('input', function() {
+            updateFolioField();
+        });
+
+        function updateFolioField() {
+            const nombreCrt = $('#nombreCrt').val();
+            const year = new Date().getFullYear().toString().slice(-2);
+            const month = (new Date().getMonth() + 1).toString().padStart(2, '0');
+            const baseUrl = 'http://localhost:3000'; // Reemplaza con tu URL base
+            const url = `${baseUrl}/api/proyectos/count`; // Endpoint para contar proyectos
+
+            // Hacer una petición para obtener el número consecutivo
+            $.get(url, function(data) {
+                const consecutivo = (parseInt(data.count) + 1).toString().padStart(3, '0');
+                const folio = `${year}${month}-${nombreCrt}-${consecutivo}`;
+                $('#folio').val(folio);
+            });
+        }
+        
+        // Llamar a updateFolioField al cargar la página (si hay datos preexistentes)
+        updateFolioField();
+    });
+</script>
+
