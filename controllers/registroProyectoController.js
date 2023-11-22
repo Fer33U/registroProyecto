@@ -1,25 +1,12 @@
 const Proyecto = require('../model/proyecto');
 const Stakeholder = require('../model/stakeholder');
+const sgMail = require('@sendgrid/mail');
 
-// Mostrar
-module.exports.mostrar = (req, res) => {
-    Proyecto.find({})
-        .populate('stakeholders')
-        .exec((error, proyectos) => {
-            if (error) {
-                return res.status(500).json({
-                    message: 'Error mostrando los proyectos',
-                });
-            }
-            return res.render('principal', { proyecto: proyectos });
-        });
-};
+sgMail.setApiKey('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');
 
-// Generar folio
 const generateFolio = async (nombreCrt) => {
     try {
         const count = await Proyecto.countDocuments({});
-
         const year = new Date().getFullYear().toString().slice(-2);
         const month = (new Date().getMonth() + 1).toString().padStart(2, '0');
         const consecutivo = (count + 1).toString().padStart(3, '0');
@@ -30,7 +17,6 @@ const generateFolio = async (nombreCrt) => {
     }
 };
 
-// Contar proyectos
 module.exports.contarProyectos = async (req, res) => {
     try {
         const count = await Proyecto.countDocuments({});
@@ -40,16 +26,33 @@ module.exports.contarProyectos = async (req, res) => {
     }
 };
 
-// Crear
+const enviarCorreo = async (nombreProyecto, fechaInicio, fechaFin, folio, descripcion, stakeholdersCorreos) => {
+    const uniqueStakeholdersCorreos = [...new Set(stakeholdersCorreos)]; // Eliminar correos duplicados
+
+    const msg = {
+        to: uniqueStakeholdersCorreos,
+        from: 'jesusfernandogonzalezpedroza@gmail.com',
+        subject: `Notificación de nuevo proyecto: ${nombreProyecto}`,
+        text: `Hola, se te notifica sobre el proyecto ${nombreProyecto}.\n\nFecha de inicio: ${fechaInicio}\nFecha de termino: ${fechaFin}\n\nFolio del proyecto: ${folio}\n\nDescripción del proyecto:\n${descripcion}`,
+    };
+
+    try {
+        await sgMail.send(msg);
+        console.log('Correo enviado');
+    } catch (error) {
+        console.error('Error al enviar el correo:', error.toString());
+    }
+};
+
+
 module.exports.crear = async (req, res) => {
     const { nombrePry, nombreCrt, descripcion, fechaInicio, fechaFin, stakeholders } = req.body;
 
     try {
         const nuevoFolio = await generateFolio(nombreCrt);
-
         const stakeholdersData = JSON.parse(stakeholders);
         let nuevosStakeholders = [];
-        
+
         if (Array.isArray(stakeholdersData) && stakeholdersData.length > 0) {
             nuevosStakeholders = await Promise.all(
                 stakeholdersData.map(async (stakeholderData) => {
@@ -75,16 +78,32 @@ module.exports.crear = async (req, res) => {
         });
 
         const proyectoGuardado = await proyecto.save();
+
+        const stakeholdersCorreos = stakeholdersData.map(stakeholder => stakeholder.correo);
+        await enviarCorreo(nombrePry, fechaInicio, fechaFin, nuevoFolio, descripcion, stakeholdersCorreos);
+
         res.redirect('/');
     } catch (error) {
         return res.status(500).json({
-            message: 'Error al crear el Proyecto',
+            message: 'Error al crear el Proyecto o enviar el correo',
             error: error.message,
         });
     }
 };
 
-// Editar
+module.exports.mostrar = (req, res) => {
+    Proyecto.find({})
+        .populate('stakeholders')
+        .exec((error, proyectos) => {
+            if (error) {
+                return res.status(500).json({
+                    message: 'Error mostrando los proyectos',
+                });
+            }
+            return res.render('principal', { proyecto: proyectos });
+        });
+};
+
 module.exports.editar = async (req, res) => {
     const { id_editar, nombrePry_editar, nombreCrt_editar, descripcion_editar, fechaInicio_editar, fechaFin_editar, stakeholders_editar } = req.body;
 
@@ -112,7 +131,6 @@ module.exports.editar = async (req, res) => {
     }
 };
 
-// Borrar
 module.exports.borrar = async (req, res) => {
     const { id } = req.params;
 
