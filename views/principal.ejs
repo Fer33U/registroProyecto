@@ -8,7 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="css/style.css">
-    <title>CRUD MongoDB</title>
+    <title>registro proyecto</title>
     <style>
         .container{
             max-width: 960px;
@@ -23,8 +23,12 @@
             <thead>
             <tr>
                 <th style="display: none;">ID</th>
-                <th>Nombre</th>
-                <th>Edad</th>
+                <th>Nombre Proyecto</th>
+                <th>Nombre Corto Proyecto</th>
+                <th>Descripcion</th>
+                <th>Fecha Inicio</th>
+                <th>Fecha Fin</th>
+                <th>Stakeholder</th>
                 <th>Acciones</th>
             </tr>
             </thead>
@@ -32,8 +36,12 @@
             <% proyecto.forEach( (proyecto) => { %>
                 <tr>
                     <td style="display: none;"><%= proyecto._id %></td>
-                    <td><%= proyecto.nombre %></td>
-                    <td><%= proyecto.edad %></td>
+                    <td><%= proyecto.nombrePry %></td>
+                    <td><%= proyecto.nombreCrt %></td>
+                    <td><%= proyecto.descripcion %></td>
+                    <td><%= proyecto.fechaInicio %></td>
+                    <td><%= proyecto.fechaFin %></td>
+                    <td><%= proyecto.stakeholder %></td>
                     <td>
                         <a type="button" class="btnEditar btn btn-outline-primary bi bi-pencil"></a>
                         <a href="/borrar/<%= proyecto._id %>" class="btn btn-outline-danger bi bi-trash"></a>
@@ -42,6 +50,8 @@
             <% }) %>
             </tbody>
         </table>
+        <!-- Agregar un enlace al formulario de registro -->
+    <a   href="/registroProyecto" class="btn btn-primary">Registrar Proyecto</a>
     </div>
 
     <!-- Modal para Editar   -->
@@ -55,13 +65,30 @@
                 <div class="modal-body">
                     <form action="/editar" method="POST">
                         <input name="id_editar" id="id_editar" type="text" hidden>
-                        <div class="mb-3">
-                            <label for="nombre_editar" class="col-form-label">Nombre:</label>
-                            <input id="nombre_editar" name="nombre_editar" type="text" class="form-control" value="">
+                        <div class="mb-1">
+                            <label for="nombrePry_editar" class="col-form-label">Nombre del Proyecto:</label>
+                            <input id="nombrePry_editar" name="nombrePry_editar" type="text" class="form-control" value="">
                         </div>
-                        <div class="mb-3">
-                            <label for="edad_editar" class="col-form-label">Edad:</label>
-                            <input id="edad_editar" name="edad_editar" type="number" class="form-control" value="">
+                        <div class="mb-1">
+                            <label for="nombreCrt_editar" class="col-form-label">Alias del Proyecto:</label>
+                            <input id="nombreCrt_editar" name="nombreCrt_editar" type="text" class="form-control" value="">
+                        </div>
+                        <div class="mb-1">
+                            <label for="descripcion_editar" class="col-form-label">Descripcion del Proyecto:</label>
+                            <textarea id="descripcion_editar" name="descripcion_editar" type="text" class="form-control" value="">
+                        </div>
+                        <div class="mb-1">
+                            <label for="fechaInicio_editar" class="col-form-label">Fecha inicio:</label>
+                            <input id="fechaInicio_editar" name="fechaInicio_editar" type="date" class="form-control" value="" onchange="this.value = new Date(this.value).toISOString().split('T')[0]">
+                        </div>
+                        <div class="mb-1">
+                            <label for="fechaFin_editar" class="col-form-label">Fecha Fin:</label>
+                            <input id="fechaFin_editar" name="fechaFin_editar" type="date" class="form-control" value="" onchange="this.value = new Date(this.value).toISOString().split('T')[0]">
+                        </div>
+                        
+                        <div class="mb-1">
+                            <label for="stakeholder" class="col-form-label">Nombre Stakeholder:</label>
+                            <input id="stakeholder" name="stakeholder" type="text" class="form-control" value="">
                         </div>
                 </div>
                 <div class="modal-footer">
@@ -74,10 +101,5 @@
     <!-- Option 1: Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
     <script src="js/code.js"></script>
-
-
-    <!-- Agregar un enlace al formulario de registro -->
-    <a href="/registroProyecto" class="btn btn-primary">Crear Nuevo Proyecto</a>
-
 </body>
 </html>

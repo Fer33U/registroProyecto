@@ -9,7 +9,11 @@ const on = (element, event, selector, handler) => {
 on(document, 'click', '.btnEditar', e =>{
     const fila = e.target.parentNode.parentNode
     id_editar.value = fila.children[0].innerHTML
-    nombre_editar.value = fila.children[1].innerHTML
-    edad_editar.value = fila.children[2].innerHTML
+    nombrePry_editar.value = fila.children[1].innerHTML
+    nombreCrt_editar.value = fila.children[2].innerHTML
+    descripcion_editar.value = fila.children[3].innerHTML
+    fechaInicio_editar.value = fila.children[4].innerHTML
+    fechaFin_editar.value = fila.children[5].innerHTML
+    stakeholder_editar.value = fila.children[6].innerHTML
     modalAlumno.show()
 })

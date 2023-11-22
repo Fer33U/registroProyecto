@@ -8,9 +8,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="css/style.css">
-    <title>CRUD MongoDB</title>
+    <title>registroProyecto</title>
     <style>
-        .container{
+        .container {
             max-width: 960px;
         }
     </style>
@@ -18,20 +18,123 @@
 <body>
 <div class="container">
     <div class="shadow-lg p-3 mb-5 bg-body rounded">
-        <h4>Datos del Alumno</h4>
-        <form action="/crear" method="POST">
+        <h4>Registro Proyecto</h4>
+        <form action="/crear" method="POST" id="proyectoForm">
+<!-- Campos existentes del formulario -->
+<div class="col-md-6">
+    <label for="folio" class="form-label">Folio</label>
+    <input id="folio" name="folio" type="text" class="form-control" disabled>
+  </div>
+  
+<div class="col-md-6">
+    <label for="nombrePry" class="form-label">Nombre del Proyecto</label>
+    <input id="nombrePry" name="nombrePry" type="text" class="form-control" required>
+</div>
+<div class="col-md-6">
+    <label for="nombreCrt" class="form-label">Nombre corto del Proyecto</label>
+    <input id="nombreCrt" name="nombreCrt" type="text" class="form-control" required>
+</div>
+<div class="col-md-6">
+    <label for="descripcion" class="form-label">Descripcion del Proyecto</label>
+    <textarea id="descripcion" name="descripcion" class="form-control" rows="4" required></textarea>
+</div>
+<div class="col-md-6">
+    <label for="fechaInicio" class="form-label">Fecha Inicio</label>
+    <input id="fechaInicio" name="fechaInicio" type="date" class="form-control" required>
+</div>
+<div class="col-md-6">
+    <label for="fechaFin" class="form-label">Fecha Fin</label>
+    <input id="fechaFin" name="fechaFin" type="date" class="form-control" required>
+</div>
+            
+            <!-- Sección para agregar stakeholders -->
+            <br>
             <div class="col-md-6">
-                <label for="nombre" class="form-label">Nombre</label>
-                <input id="nombre" name="nombre" type="text" class="form-control" required>
+                <h5>Stakeholders</h5>
+                <!-- Campos para agregar stakeholders -->
+                <div class="mb-3">
+                    <!-- Campo para el nombre del stakeholder -->
+                    <label for="nombreStakeholder" class="form-label">Nombre del Stakeholder</label>
+                    <input id="nombreStakeholder" name="nombreStakeholder" type="text" class="form-control">
+                </div>
+                <!-- Campo para el correo electrónico del stakeholder -->
+                <div class="mb-3">
+                    <label for="correoStakeholder" class="form-label">Correo Electrónico del Stakeholder</label>
+                    <input id="correoStakeholder" name="correoStakeholder" type="email" class="form-control">
+                </div>
+                <!-- Campo para el teléfono del stakeholder -->
+                <div class="mb-3">
+                    <label for="telefonoStakeholder" class="form-label">Teléfono del Stakeholder</label>
+                    <input id="telefonoStakeholder" name="telefonoStakeholder" type="tel" class="form-control">
+                </div>
+                <!-- Botón para agregar stakeholders -->
+                <button type="button" id="agregarStakeholder" class="btn btn-primary mt-2">
+                    Agregar Stakeholder
+                </button>
+                <!-- Contenedor para mostrar stakeholders agregados -->
+                <div id="stakeholders-container" class="stakeholder-info">
+                    <!-- Aquí se mostrarán dinámicamente los stakeholders -->
+                </div>
             </div>
+            <br>
             <div class="col-md-6">
-                <label for="edad" class="form-label">Edad</label>
-                <input id="edad" name="edad" type="number" class="form-control" required>
-            </div>
-            <button type="submit" class="w-100 btn btn-guardar btn-lg"><i class="bi bi-save"></i>Registrar Carga</button>
+                <label for="documentoPDF" class="form-label">Documento PDF</label>
+                <input type="file" id="documentoPDF" name="documentoPDF" accept="application/pdf" class="form-control">
+              </div>
+              
+            <!-- Botón "Registrar Proyecto" del formulario -->
+            <button type="submit" class="w-100 btn btn-guardar btn-lg"><i class="bi bi-save"></i>Registrar Proyecto</button>
         </form>
-    <!-- Option 1: Bootstrap Bundle with Popper -->
+    </div>
+
+    <!-- Bootstrap y JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
-    <script src="js/code.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        let stakeholders = []; 
+
+        function agregarStakeholder(nombre, correo, telefono) {
+            var nuevoStakeholder = `
+                <div class="stakeholder">
+                    <p><strong>${nombre}</strong></p>
+                    <p>${correo}</p>
+                    <p>${telefono}</p>
+                    <button class="btn btn-danger btn-sm eliminar-stakeholder">Eliminar</button>
+                </div>
+            `;
+            $('#stakeholders-container').append(nuevoStakeholder);
+        }
+
+        $(document).on('click', '.eliminar-stakeholder', function() {
+            $(this).parent('.stakeholder').remove();
+        });
+
+        $('#agregarStakeholder').click(function () {
+            const nombre = $('#nombreStakeholder').val();
+            const correo = $('#correoStakeholder').val();
+            const telefono = $('#telefonoStakeholder').val();
+
+            agregarStakeholder(nombre, correo, telefono);
+            guardarStakeholderEnFormulario(nombre, correo, telefono);
+        });
+
+        function guardarStakeholderEnFormulario(nombre, correo, telefono) {
+            const stakeholder = { nombre, correo, telefono };
+            stakeholders.push(stakeholder);
+        }
+
+        $('#proyectoForm').submit(function (event) {
+            event.preventDefault();
+
+            $('<input>').attr({
+                type: 'hidden',
+                name: 'stakeholders',
+                value: JSON.stringify(stakeholders)
+            }).appendTo('#proyectoForm');
+
+            this.submit();
+        });
+    </script>
+</div>
 </body>
 </html>
