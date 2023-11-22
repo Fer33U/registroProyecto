@@ -78,6 +78,42 @@
                 </div>
             </div>
             <br>
+            <!-- Campo "estatus" deshabilitado y predefinido -->
+            <div class="col-md-6">
+                <label for="estatus" class="form-label">Estatus</label>
+                <input id="estatus" name="estatus" type="text" class="form-control" value="Activo" disabled>
+            </div>
+
+            <div class="col-md-6">
+                <label for="costoProyecto" class="form-label">Costo del proyecto</label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-shop"></i>
+                    </span>
+                    <input id="costoProyecto" name="costoProyecto" type="text" pattern="^[0-9]+(\.[0-9]{1,2})?$" inputmode="numeric" class="form-control" required>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <h5>Pagos Parciales</h5>
+                <div id="pagos-parciales-container">
+                    <!-- Aquí se mostrarán dinámicamente los pagos parciales -->
+                </div>
+                <div class="mb-3">
+                    <label for="montoPago" class="form-label">Monto de Pago</label>
+                    <input id="montoPago" name="montoPago" type="number" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label for="fechaPago" class="form-label">Fecha de Pago</label>
+                    <input id="fechaPago" name="fechaPago" type="date" class="form-control">
+                </div>
+                <button type="button" id="agregarPagoParcial" class="btn btn-success mt-2">
+                    Agregar Pago Parcial
+                </button>
+            </div>
+            
+
+
             <div class="col-md-6">
                 <label for="documentoPDF" class="form-label">Documento PDF</label>
                 <input type="file" id="documentoPDF" name="documentoPDF" accept="application/pdf" class="form-control">
@@ -91,6 +127,56 @@
     <!-- Bootstrap y JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        let pagosParciales = [];
+    
+        function agregarPagoParcial(fechaPago, montoPago) {
+            var nuevoPagoParcial = `
+                <div class="pago-parcial">
+                    <p><strong>Fecha de Pago:</strong> ${fechaPago}</p>
+                    <p><strong>Monto:</strong> ${montoPago}</p>
+                    <button class="btn btn-danger btn-sm eliminar-pago-parcial">Eliminar</button>
+                </div>
+            `;
+            $('#pagos-parciales-container').append(nuevoPagoParcial);
+        }
+    
+        $(document).on('click', '.eliminar-pago-parcial', function() {
+            $(this).parent('.pago-parcial').remove();
+        });
+    
+        $('#agregarPagoParcial').click(function () {
+            const fechaPago = $('#fechaPago').val();
+            const montoPago = $('#montoPago').val();
+    
+            agregarPagoParcial(fechaPago, montoPago);
+            guardarPagoParcialEnFormulario(fechaPago, montoPago);
+        });
+    
+        function guardarPagoParcialEnFormulario(fechaPago, montoPago) {
+            const pagoParcial = { fechaPago, montoPago };
+            pagosParciales.push(pagoParcial);
+        }
+    
+        // Evento de envío del formulario
+        $('#proyectoForm').submit(function (event) {
+            event.preventDefault();
+    
+            // Agregar pagos parciales al formulario como un campo oculto
+            $('<input>').attr({
+                type: 'hidden',
+                name: 'pagosParciales',
+                value: JSON.stringify(pagosParciales)
+            }).appendTo('#proyectoForm');
+    
+            // Resto del código para enviar el formulario...
+            // ...
+    
+            // Por ejemplo:
+            // this.submit();
+        });
+    </script>
+    
     <script>
         let stakeholders = []; 
 
@@ -124,14 +210,25 @@
             stakeholders.push(stakeholder);
         }
 
-        $('#proyectoForm').submit(function (event) {
+       // Evento de envío del formulario
+       $('#proyectoForm').submit(function (event) {
             event.preventDefault();
 
+            // Agregar stakeholders al formulario como un campo oculto
             $('<input>').attr({
                 type: 'hidden',
                 name: 'stakeholders',
                 value: JSON.stringify(stakeholders)
             }).appendTo('#proyectoForm');
+
+            // Agregar el campo "estatus" al formulario
+            const estatusField = $('<input>').attr({
+                type: 'hidden',
+                name: 'estatus',
+                value: 'Activo' // Valor por defecto para el estatus
+            });
+
+            $('#proyectoForm').append(estatusField); // Agregar el campo al formulario
 
             this.submit();
         });

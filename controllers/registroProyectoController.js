@@ -2,7 +2,7 @@ const Proyecto = require('../model/proyecto');
 const Stakeholder = require('../model/stakeholder');
 const sgMail = require('@sendgrid/mail');
 
-sgMail.setApiKey('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');
+sgMail.setApiKey('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');
 
 const generateFolio = async (nombreCrt) => {
     try {
@@ -46,12 +46,15 @@ const enviarCorreo = async (nombreProyecto, fechaInicio, fechaFin, folio, descri
 
 
 module.exports.crear = async (req, res) => {
-    const { nombrePry, nombreCrt, descripcion, fechaInicio, fechaFin, stakeholders } = req.body;
+    const { nombrePry, nombreCrt, descripcion, fechaInicio, fechaFin, stakeholders, costoProyecto, pagosParciales } = req.body;
 
     try {
         const nuevoFolio = await generateFolio(nombreCrt);
         const stakeholdersData = JSON.parse(stakeholders);
+        const pagosParcialesData = JSON.parse(pagosParciales); // Parsear los pagos parciales desde el cuerpo de la solicitud
+
         let nuevosStakeholders = [];
+        let nuevosPagosParciales = [];
 
         if (Array.isArray(stakeholdersData) && stakeholdersData.length > 0) {
             nuevosStakeholders = await Promise.all(
@@ -62,6 +65,10 @@ module.exports.crear = async (req, res) => {
             );
         }
 
+        if (Array.isArray(pagosParcialesData) && pagosParcialesData.length > 0) {
+            nuevosPagosParciales = pagosParcialesData; // Asignar directamente los pagos parciales parseados
+        }
+
         const proyecto = new Proyecto({
             folio: nuevoFolio,
             nombrePry,
@@ -69,12 +76,15 @@ module.exports.crear = async (req, res) => {
             descripcion,
             fechaInicio,
             fechaFin,
+            estatus: 'Activo',
+            costoProyecto,
             stakeholders: nuevosStakeholders.map(stakeholder => stakeholder._id),
             stakeholdersInfo: nuevosStakeholders.map(stakeholder => ({
                 nombre: stakeholder.nombre,
                 correoElectronico: stakeholder.correo,
                 telefono: stakeholder.telefono
-            }))
+            })),
+            pagosParciales: nuevosPagosParciales // Incluir los pagos parciales en el proyecto
         });
 
         const proyectoGuardado = await proyecto.save();
@@ -90,6 +100,7 @@ module.exports.crear = async (req, res) => {
         });
     }
 };
+
 
 module.exports.mostrar = (req, res) => {
     Proyecto.find({})
